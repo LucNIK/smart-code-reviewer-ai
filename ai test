@@ -1,6 +1,5 @@
-password = "123456"
+# bad_code.py
+def somme(a, b):
+    return a + b
 
-def calc(x,y):
- return x+y
-
-print(calc(1,2))
+print(somme("1", 2))  # erreur volontaire : type mismatch
