@@ -5,8 +5,13 @@ from openai import OpenAI
 
 app = FastAPI()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Vérifie que la clé OpenAI est bien définie
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise RuntimeError("❌ L'environnement OPENAI_API_KEY n'est pas défini !")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
+# Token GitHub (PR comments)
 GH_TOKEN = "SHA256:kMJS9VJFqkWVVdWP90i+IjXZLDQcomk+3CD4OM1kljc"
 
 def analyze_code(code):
@@ -30,12 +35,23 @@ Code:
     return response.choices[0].message.content
 
 
+# -----------------------------
+# Route ping pour tester le serveur
+# -----------------------------
+@app.get("/")
+def root():
+    return {"message": "Server is running! GitHub webhook is ready."}
+
+
+# -----------------------------
+# Webhook GitHub
+# -----------------------------
 @app.post("/webhook")
 async def webhook(request: Request):
     payload = await request.json()
 
+    # Vérifie si c'est l'ouverture d'une PR
     if payload.get("action") == "opened" and "pull_request" in payload:
-
         files_url = payload["pull_request"]["url"] + "/files"
         headers = {"Authorization": f"token {GH_TOKEN}"}
 
