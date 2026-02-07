@@ -5,16 +5,20 @@ from openai import OpenAI
 
 app = FastAPI()
 
-# Vérifie que la clé OpenAI est bien définie
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("❌ L'environnement OPENAI_API_KEY n'est pas défini !")
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Initialise le client OpenAI avec ta clé d'environnement
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Token GitHub (PR comments)
-GH_TOKEN = "SHA256:kMJS9VJFqkWVVdWP90i+IjXZLDQcomk+3CD4OM1kljc"
+# Nouveau token GitHub pour les webhooks
+GH_TOKEN = "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"
 
-def analyze_code(code):
+def analyze_code(code: str) -> str:
+    """
+    Analyse le code avec GPT-5-mini et renvoie un résumé :
+    - bugs
+    - améliorations
+    - problèmes de sécurité
+    - conseils de performance
+    """
     prompt = f"""
 You are an expert code reviewer.
 Analyze the following code and provide:
@@ -35,23 +39,17 @@ Code:
     return response.choices[0].message.content
 
 
-# -----------------------------
-# Route ping pour tester le serveur
-# -----------------------------
-@app.get("/")
-def root():
-    return {"message": "Server is running! GitHub webhook is ready."}
-
-
-# -----------------------------
-# Webhook GitHub
-# -----------------------------
 @app.post("/webhook")
 async def webhook(request: Request):
+    """
+    Point de réception du webhook GitHub pour les PR ouvertes.
+    Analyse automatiquement les fichiers modifiés et poste un commentaire avec l'analyse.
+    """
     payload = await request.json()
 
-    # Vérifie si c'est l'ouverture d'une PR
+    # Vérifie si c'est un PR ouvert
     if payload.get("action") == "opened" and "pull_request" in payload:
+
         files_url = payload["pull_request"]["url"] + "/files"
         headers = {"Authorization": f"token {GH_TOKEN}"}
 
@@ -60,13 +58,14 @@ async def webhook(request: Request):
         review_text = ""
 
         for f in files:
+            # Ne traiter que les fichiers modifiés (patch)
             if f.get("patch"):
                 review = analyze_code(f["patch"])
                 review_text += f"\n### File: {f['filename']}\n{review}\n"
 
+        # Poster le commentaire sur le PR
         comment_url = payload["pull_request"]["comments_url"]
         data = {"body": f"🤖 AI Code Review\n{review_text}"}
-
         requests.post(comment_url, headers=headers, json=data)
 
         print("AI review posted!")
