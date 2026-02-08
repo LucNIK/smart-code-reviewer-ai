@@ -1,0 +1,8 @@
+# bad_code.py
+def somme(a, b):
+    return a + b
+
+<<<<<<< Updated upstream
+print(somme("1", 2))  # erreur volontaire : type mismatch T+++++++++++++++++++++8888888888,
+
+hsfdkjhgwfgegwefgi
