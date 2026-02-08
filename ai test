@@ -2,4 +2,8 @@
 def somme(a, b):
     return a + b
 
+<<<<<<< Updated upstream
 print(somme("1", 2))  # erreur volontaire : type mismatch xxkwk,
+=======
+print(somme("1", 2))  # erreur volontaire : type mismatch test++++++++888,
+>>>>>>> Stashed changes
