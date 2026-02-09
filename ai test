@@ -1,0 +1,4 @@
+# bad_code.py
+def somme(a, b):
+    return a + b
+#done
