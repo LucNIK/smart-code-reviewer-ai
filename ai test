@@ -6,7 +6,6 @@ def somme(a, b):
 print(somme("1", 2))  # erreur volontaire : type mismatch T+++++++++++++++++++++8888888888,
 
 <<<<<<< Updated upstream
-hsfdkjhgwfgegwefgi
 =======
 #hsfdkjhgwfgegwefgi++++++++
 >>>>>>> Stashed changes
