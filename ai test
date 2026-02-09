@@ -5,4 +5,4 @@ def somme(a, b):
 <<<<<<< Updated upstream
 print(somme("1", 2))  # erreur volontaire : type mismatch T+++++++++++++++++++++8888888888,
 
-hsfdkjhgwfgegwefgi
+hsfdkjhgwfgegwefgi++++++++
